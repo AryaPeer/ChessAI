@@ -4,37 +4,33 @@
 var board = null
 var $board = $('#myBoard')
 var game = new Chess()
-var whiteSquareGrey = '#a9a9a9'
-var blackSquareGrey = '#696969'
-
 var squareToHighlight = null
-var colorToHighlight = null;
 var squareClass = 'square-55d63'
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
-
-var config = {
-  draggable: true,
-  position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onMouseoutSquare: onMouseoutSquare,
-  onMouseoverSquare: onMouseoverSquare,
-  onMoveEnd: onMoveEnd,
-  onSnapEnd: onSnapEnd
-}
-
-board = Chessboard('myBoard', config)
-
-updateStatus()
+var whiteSquareGrey = '#a9a9a9'
+var blackSquareGrey = '#696969'
 
 function removeHighlights(color) {
   $board.find('.' + squareClass)
     .removeClass('highlight-' + color)
 }
 
+function removeGreySquares() {
+  $('#myBoard .square-55d63').css('background', '')
+}
 
+function greySquare(square) {
+  var $square = $('#myBoard .square-' + square)
+
+  var background = whiteSquareGrey
+  if ($square.hasClass('black-3c85d')) {
+    background = blackSquareGrey
+  }
+
+  $square.css('background', background)
+}
 
 
 function onDragStart(source, piece, position, orientation) {
@@ -43,11 +39,9 @@ function onDragStart(source, piece, position, orientation) {
 
   // only pick up pieces for White
   if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
-    if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
     return false
   }
 }
-
 
 function makeRandomMove() {
   // Check if it's the black player's turn
@@ -75,7 +69,7 @@ function makeRandomMove() {
 }
 
 function onDrop(source, target) {
-  removeGreySquares()
+
   // see if the move is legal
   var move = game.move({
     from: source,
@@ -86,20 +80,13 @@ function onDrop(source, target) {
   // illegal move
   if (move === null) return 'snapback'
 
-  $board.find('.' + squareClass).removeClass('highlight-white');
-  $board.find('.square-' + move.from).addClass('highlight-white');
-  squareToHighlight = move.to;
-  colorToHighlight = 'white';
+  removeHighlights('white')
+  $board.find('.square-' + source).addClass('highlight-white')
+  $board.find('.square-' + target).addClass('highlight-white')
 
   // make random legal move for black
   updateStatus()
   window.setTimeout(makeRandomMove, 250)
-}
-
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
-function onSnapEnd() {
-  board.position(game.fen())
 }
 
 function onMoveEnd() {
@@ -130,19 +117,10 @@ function onMouseoutSquare(square, piece) {
   removeGreySquares()
 }
 
-function removeGreySquares() {
-  $('#myBoard .square-55d63').css('background', '')
-}
-
-function greySquare(square) {
-  var $square = $('#myBoard .square-' + square)
-
-  var background = whiteSquareGrey
-  if ($square.hasClass('black-3c85d')) {
-    background = blackSquareGrey
-  }
-
-  $square.css('background', background)
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+function onSnapEnd() {
+  board.position(game.fen())
 }
 
 function updateStatus() {
@@ -176,4 +154,19 @@ function updateStatus() {
   $status.html(status)
   $fen.html(game.fen())
   $pgn.html(game.pgn())
-}}
+}
+
+var config = {
+  draggable: true,
+  position: 'start',
+  onDragStart: onDragStart,
+  onDrop: onDrop,
+  onMouseoutSquare: onMouseoutSquare,
+  onMouseoverSquare: onMouseoverSquare,
+  onMoveEnd: onMoveEnd,
+  onSnapEnd: onSnapEnd
+}
+
+board = Chessboard('myBoard', config)
+
+updateStatus()
