@@ -2,12 +2,20 @@
 // https://github.com/jhlywa/chess.js
 
 var board = null
+var $board = $('#myBoard')
 var game = new Chess()
+var squareToHighlight = null
+var squareClass = 'square-55d63'
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
 var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
+
+function removeHighlights(color) {
+  $board.find('.' + squareClass)
+    .removeClass('highlight-' + color)
+}
 
 function removeGreySquares() {
   $('#myBoard .square-55d63').css('background', '')
@@ -38,16 +46,24 @@ function onDragStart(source, piece, position, orientation) {
 function makeRandomMove() {
   // Check if it's the black player's turn
   if (game.turn() === 'b') {
-    var possibleMoves = game.moves();
+    var possibleMoves = game.moves({
+      verbose: true
+    })
 
-    // Game over
-    if (possibleMoves.length === 0) return;
+    // game over
+    if (possibleMoves.length === 0) return
 
-    var randomIdx = Math.floor(Math.random() * possibleMoves.length);
-    game.move(possibleMoves[randomIdx]);
-    board.position(game.fen());
+    var randomIdx = Math.floor(Math.random() * possibleMoves.length)
+    var move = possibleMoves[randomIdx]
+    game.move(move.san)
 
-    // After making a move for the black player, update the status
+    // highlight black's move
+    removeHighlights('black')
+    $board.find('.square-' + move.from).addClass('highlight-black')
+    squareToHighlight = move.to
+
+    // update the board to the new position
+    board.position(game.fen())
     updateStatus();
   }
 }
@@ -64,9 +80,18 @@ function onDrop(source, target) {
   // illegal move
   if (move === null) return 'snapback'
 
+  removeHighlights('white')
+  $board.find('.square-' + source).addClass('highlight-white')
+  $board.find('.square-' + target).addClass('highlight-white')
+
   // make random legal move for black
   updateStatus()
   window.setTimeout(makeRandomMove, 250)
+}
+
+function onMoveEnd() {
+  $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-black')
 }
 
 function onMouseoverSquare(square, piece) {
@@ -138,6 +163,7 @@ var config = {
   onDrop: onDrop,
   onMouseoutSquare: onMouseoutSquare,
   onMouseoverSquare: onMouseoverSquare,
+  onMoveEnd: onMoveEnd,
   onSnapEnd: onSnapEnd
 }
 
