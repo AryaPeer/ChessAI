@@ -8,11 +8,26 @@ var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
 
 var squareToHighlight = null
+var colorToHighlight = null;
 var squareClass = 'square-55d63'
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
 
+var config = {
+  draggable: true,
+  position: 'start',
+  onDragStart: onDragStart,
+  onDrop: onDrop,
+  onMouseoutSquare: onMouseoutSquare,
+  onMouseoverSquare: onMouseoverSquare,
+  onMoveEnd: onMoveEnd,
+  onSnapEnd: onSnapEnd
+}
+
+board = Chessboard('myBoard', config)
+
+updateStatus()
 
 function removeHighlights(color) {
   $board.find('.' + squareClass)
@@ -28,6 +43,7 @@ function onDragStart(source, piece, position, orientation) {
 
   // only pick up pieces for White
   if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
+    if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
     return false
   }
 }
@@ -59,6 +75,7 @@ function makeRandomMove() {
 }
 
 function onDrop(source, target) {
+  removeGreySquares()
   // see if the move is legal
   var move = game.move({
     from: source,
@@ -66,14 +83,13 @@ function onDrop(source, target) {
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   })
 
-  removeGreySquares()
-
   // illegal move
   if (move === null) return 'snapback'
 
-  removeHighlights('white')
-  $board.find('.square-' + source).addClass('highlight-white')
-  $board.find('.square-' + target).addClass('highlight-white')
+  $board.find('.' + squareClass).removeClass('highlight-white');
+  $board.find('.square-' + move.from).addClass('highlight-white');
+  squareToHighlight = move.to;
+  colorToHighlight = 'white';
 
   // make random legal move for black
   updateStatus()
@@ -160,19 +176,4 @@ function updateStatus() {
   $status.html(status)
   $fen.html(game.fen())
   $pgn.html(game.pgn())
-}
-
-var config = {
-  draggable: true,
-  position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onMouseoutSquare: onMouseoutSquare,
-  onMouseoverSquare: onMouseoverSquare,
-  onMoveEnd: onMoveEnd,
-  onSnapEnd: onSnapEnd
-}
-
-board = Chessboard('myBoard', config)
-
-updateStatus()
+}}
