@@ -4,33 +4,22 @@
 var board = null
 var $board = $('#myBoard')
 var game = new Chess()
+var whiteSquareGrey = '#a9a9a9'
+var blackSquareGrey = '#696969'
+
 var squareToHighlight = null
 var squareClass = 'square-55d63'
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
-var whiteSquareGrey = '#a9a9a9'
-var blackSquareGrey = '#696969'
+
 
 function removeHighlights(color) {
   $board.find('.' + squareClass)
     .removeClass('highlight-' + color)
 }
 
-function removeGreySquares() {
-  $('#myBoard .square-55d63').css('background', '')
-}
 
-function greySquare(square) {
-  var $square = $('#myBoard .square-' + square)
-
-  var background = whiteSquareGrey
-  if ($square.hasClass('black-3c85d')) {
-    background = blackSquareGrey
-  }
-
-  $square.css('background', background)
-}
 
 
 function onDragStart(source, piece, position, orientation) {
@@ -42,6 +31,7 @@ function onDragStart(source, piece, position, orientation) {
     return false
   }
 }
+
 
 function makeRandomMove() {
   // Check if it's the black player's turn
@@ -69,13 +59,14 @@ function makeRandomMove() {
 }
 
 function onDrop(source, target) {
-  removeGreySquares()
   // see if the move is legal
   var move = game.move({
     from: source,
     to: target,
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   })
+
+  removeGreySquares()
 
   // illegal move
   if (move === null) return 'snapback'
@@ -87,6 +78,12 @@ function onDrop(source, target) {
   // make random legal move for black
   updateStatus()
   window.setTimeout(makeRandomMove, 250)
+}
+
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+function onSnapEnd() {
+  board.position(game.fen())
 }
 
 function onMoveEnd() {
@@ -117,10 +114,19 @@ function onMouseoutSquare(square, piece) {
   removeGreySquares()
 }
 
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
-function onSnapEnd() {
-  board.position(game.fen())
+function removeGreySquares() {
+  $('#myBoard .square-55d63').css('background', '')
+}
+
+function greySquare(square) {
+  var $square = $('#myBoard .square-' + square)
+
+  var background = whiteSquareGrey
+  if ($square.hasClass('black-3c85d')) {
+    background = blackSquareGrey
+  }
+
+  $square.css('background', background)
 }
 
 function updateStatus() {
