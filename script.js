@@ -1,3 +1,6 @@
+// NOTE: this example uses the chess.js library:
+// https://github.com/jhlywa/chess.js
+
 var board = null
 var $board = $('#myBoard')
 var game = new Chess()
@@ -40,41 +43,33 @@ function onDragStart(source, piece, position, orientation) {
   }
 }
 
+function makeRandomMove() {
+  // Check if it's the black player's turn
+  if (game.turn() === 'b') {
+    var possibleMoves = game.moves({
+      verbose: true
+    })
 
-function getBestMove(game) {
-  var newGameMoves = game.ugly_moves();
-  var bestMove = null;
-  //use any negative large number
-  var bestValue = -9999;
+    // game over
+    if (possibleMoves.length === 0) return
 
-  for (var i = 0; i < newGameMoves.length; i++) {
-      var newGameMove = newGameMoves[i];
-      game.ugly_move(newGameMove);
+    var randomIdx = Math.floor(Math.random() * possibleMoves.length)
+    var move = possibleMoves[randomIdx]
+    game.move(move.san)
 
-      //take the negative as AI plays as black
-      var boardValue = -evaluateBoard(game.board())
-      game.undo();
-      if (boardValue > bestValue) {
-          bestValue = boardValue;
-          bestMove = newGameMove
-      }
+    // highlight black's move
+    removeHighlights('black')
+    $board.find('.square-' + move.from).addClass('highlight-black')
+    squareToHighlight = move.to
+
+    // update the board to the new position
+    board.position(game.fen())
+    updateStatus();
   }
-
-  return bestMove;
-};
-
-function makeBestMove() {
-  var bestMove = getBestMove(game);
-  game.ugly_move(bestMove);
-  removeHighlights('black')
-  $board.find('.square-' + move.from).addClass('highlight-black')
-  squareToHighlight = move.to
-  board.position(game.fen())
-  updateStatus();
-};
+}
 
 function onDrop(source, target) {
-
+  removeGreySquares()
   // see if the move is legal
   var move = game.move({
     from: source,
@@ -91,7 +86,7 @@ function onDrop(source, target) {
 
   // make random legal move for black
   updateStatus()
-  window.setTimeout(makeBestMove, 250)
+  window.setTimeout(makeRandomMove, 250)
 }
 
 function onMoveEnd() {
