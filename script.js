@@ -43,12 +43,6 @@ function onDragStart(source, piece, position, orientation) {
   }
 }
 
-function calculateBestMove(game) {
-  var newGameMoves = game.ugly_moves();
-  return newGameMoves[Math.floor(Math.random() * newGameMoves.length)];
-};
-
-//just left it as old function name despite the fact that it's running the best move
 function makeRandomMove() {
   // Check if it's the black player's turn
   if (game.turn() === 'b') {
@@ -59,8 +53,9 @@ function makeRandomMove() {
     // game over
     if (possibleMoves.length === 0) return
 
-    var bestMove = getBestMove(game);
-    game.ugly_move(bestMove);
+    var randomIdx = Math.floor(Math.random() * possibleMoves.length)
+    var move = possibleMoves[randomIdx]
+    game.move(move.san)
 
     // highlight black's move
     removeHighlights('black')
