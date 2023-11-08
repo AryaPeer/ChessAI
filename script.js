@@ -1,4 +1,5 @@
-import { Chess } from './node_modules/chess.js/dist/esm/chess.js';
+// NOTE: this example uses the chess.js library:
+// https://github.com/jhlywa/chess.js
 
 var board = null
 var $board = $('#myBoard')
@@ -34,13 +35,11 @@ function greySquare(square) {
 
 function onDragStart(source, piece, position, orientation) {
   // do not pick up pieces if the game is over
-  if (game.isGameOver()) return false
+  if (game.game_over()) return false
 
-  if (
-    (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-    (game.turn() === 'b' && piece.search(/^w/) !== -1)
-  ) {
-    return false;
+  // only pick up pieces for White
+  if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
+    return false
   }
 }
 
@@ -133,12 +132,12 @@ function updateStatus() {
   }
 
   // checkmate?
-  if (game.isCheckmate()) {
+  if (game.in_checkmate()) {
     status = 'Game over, ' + moveColor + ' is in checkmate.'
   }
 
   // draw?
-  else if (game.isDraw()) {
+  else if (game.in_draw()) {
     status = 'Game over, drawn position'
   }
 
@@ -147,7 +146,7 @@ function updateStatus() {
     status = moveColor + ' to move'
 
     // check?
-    if (game.inCheck()) {
+    if (game.in_check()) {
       status += ', ' + moveColor + ' is in check'
     }
   }
