@@ -1,6 +1,4 @@
-// NOTE: this example uses the chess.js library:
-// https://github.com/jhlywa/chess.js
-
+/*Chessboard and Game variables*/
 let board, game = new Chess();
 let $board = $('#myBoard')
 let $status = $('#status')
@@ -9,59 +7,7 @@ let $pgn = $('#pgn')
 const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
 
-function minimaxRoot(depth, game, isMaximisingPlayer) {
-
-  let newGameMoves = game.ugly_moves();
-  let bestMove = -9999;
-  let bestMoveFound;
-
-  for(let i = 0; i < newGameMoves.length; i++) {
-      let newGameMove = newGameMoves[i]
-      game.ugly_move(newGameMove);
-      let value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
-      game.undo();
-      if(value >= bestMove) {
-          bestMove = value;
-          bestMoveFound = newGameMove;
-      }
-  }
-  return bestMoveFound;
-};
-
-function minimax(depth, game, alpha, beta, isMaximisingPlayer) {
-  if (depth === 0) {
-      return -evaluateBoard(game.board());
-  }
-
-  let newGameMoves = game.ugly_moves();
-
-  if (isMaximisingPlayer) {
-      let bestMove = -9999;
-      for (let i = 0; i < newGameMoves.length; i++) {
-          game.ugly_move(newGameMoves[i]);
-          bestMove = Math.max(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
-          game.undo();
-          alpha = Math.max(alpha, bestMove);
-          if (beta <= alpha) {
-              return bestMove;
-          }
-      }
-      return bestMove;
-  } else {
-      let bestMove = 9999;
-      for (var i = 0; i < newGameMoves.length; i++) {
-          game.ugly_move(newGameMoves[i]);
-          bestMove = Math.min(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
-          game.undo();
-          beta = Math.min(beta, bestMove);
-          if (beta <= alpha) {
-              return bestMove;
-          }
-      }
-      return bestMove;
-  }
-};
-
+/* Board Evalulation */
 function evaluateBoard(board) {
   let totalEvaluation = 0;
   for (let i = 0; i < 8; i++) {
@@ -153,7 +99,9 @@ const kingEvalWhite = [
 ];
 
 const kingEvalBlack = reverseArray(kingEvalWhite);
+/* End of Board Evalulation */
 
+/* Piece Evalulation */
 function getPieceValue (piece, x, y) {
   if (piece === null) {
       return 0;
@@ -178,7 +126,64 @@ function getPieceValue (piece, x, y) {
   let absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
   return piece.color === 'w' ? absoluteValue : -absoluteValue;
 };
+/* End of Piece Evalulation */
 
+/*Movement Calculations Start here*/
+function minimaxRoot(depth, game, isMaximisingPlayer) {
+
+  let newGameMoves = game.ugly_moves();
+  let bestMove = -9999;
+  let bestMoveFound;
+
+  for(let i = 0; i < newGameMoves.length; i++) {
+      let newGameMove = newGameMoves[i]
+      game.ugly_move(newGameMove);
+      let value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
+      game.undo();
+      if(value >= bestMove) {
+          bestMove = value;
+          bestMoveFound = newGameMove;
+      }
+  }
+  return bestMoveFound;
+};
+
+function minimax(depth, game, alpha, beta, isMaximisingPlayer) {
+  if (depth === 0) {
+      return -evaluateBoard(game.board());
+  }
+
+  let newGameMoves = game.ugly_moves();
+
+  if (isMaximisingPlayer) {
+      let bestMove = -9999;
+      for (let i = 0; i < newGameMoves.length; i++) {
+          game.ugly_move(newGameMoves[i]);
+          bestMove = Math.max(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
+          game.undo();
+          alpha = Math.max(alpha, bestMove);
+          if (beta <= alpha) {
+              return bestMove;
+          }
+      }
+      return bestMove;
+  } else {
+      let bestMove = 9999;
+      for (var i = 0; i < newGameMoves.length; i++) {
+          game.ugly_move(newGameMoves[i]);
+          bestMove = Math.min(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
+          game.undo();
+          beta = Math.min(beta, bestMove);
+          if (beta <= alpha) {
+              return bestMove;
+          }
+      }
+      return bestMove;
+  }
+};
+/*movement calculations end here*/
+
+/*Get and make best move based on min max algorithm*/
 function getBestMove (game) {
   updateStatus();
   const depth = 3;
@@ -203,12 +208,9 @@ function makeBestMove () {
     updateStatus();
   }
 };
+/*End of get and make best move based on min max algorithm*/
 
-
-function removeGreySquares() {
-  $('#myBoard .square-55d63').css('background', '')
-}
-
+/*Chessboard and Game setup*/
 function greySquare(square) {
   let $square = $('#myBoard .square-' + square)
 
@@ -220,12 +222,13 @@ function greySquare(square) {
   $square.css('background', background)
 }
 
+function removeGreySquares() {
+  $('#myBoard .square-55d63').css('background', '')
+}
 
 function onDragStart(source, piece, position, orientation) {
-  // do not pick up pieces if the game is over
   if (game.game_over()) return false
 
-  // only pick up pieces for White
   if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
     return false
   }
@@ -233,35 +236,29 @@ function onDragStart(source, piece, position, orientation) {
 
 function onDrop(source, target) {
   removeGreySquares()
-  // see if the move is legal
+
   let move = game.move({
     from: source,
     to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    promotion: 'q'
   })
 
-  // illegal move
   if (move === null) return 'snapback'
 
-  // make random legal move for black
   updateStatus()
   window.setTimeout(makeBestMove, 250)
 }
 
 function onMouseoverSquare(square, piece) {
-  // get list of possible moves for this square
   let moves = game.moves({
     square: square,
     verbose: true
   })
 
-  // exit if there are no moves available for this square
   if (moves.length === 0 || piece.search(/^b/) !== -1) return
 
-  // highlight the square they moused over
   greySquare(square)
 
-  // highlight the possible squares for this piece
   for (var i = 0; i < moves.length; i++) {
     greySquare(moves[i].to)
   }
@@ -271,8 +268,6 @@ function onMouseoutSquare(square, piece) {
   removeGreySquares()
 }
 
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
 function onSnapEnd() {
   board.position(game.fen())
 }
@@ -285,17 +280,14 @@ function updateStatus() {
     moveColor = 'Black'
   }
 
-  // checkmate?
   if (game.in_checkmate()) {
     status = 'Game over, ' + moveColor + ' is in checkmate.'
   }
 
-  // draw?
   else if (game.in_draw()) {
     status = 'Game over, drawn position'
   }
 
-  // game still on
   else {
     status = moveColor + ' to move'
 
