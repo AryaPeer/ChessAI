@@ -1,26 +1,24 @@
 // NOTE: this example uses the chess.js library:
 // https://github.com/jhlywa/chess.js
 
-var board, game = new Chess();
-var $board = $('#myBoard')
-var squareToHighlight = null
-var squareClass = 'square-55d63'
-var $status = $('#status')
-var $fen = $('#fen')
-var $pgn = $('#pgn')
-var whiteSquareGrey = '#a9a9a9'
-var blackSquareGrey = '#696969'
+let board, game = new Chess();
+let $board = $('#myBoard')
+let $status = $('#status')
+let $fen = $('#fen')
+let $pgn = $('#pgn')
+const whiteSquareGrey = '#a9a9a9'
+const blackSquareGrey = '#696969'
 
-var minimaxRoot =function(depth, game, isMaximisingPlayer) {
+function minimaxRoot(depth, game, isMaximisingPlayer) {
 
-  var newGameMoves = game.ugly_moves();
-  var bestMove = -9999;
-  var bestMoveFound;
+  let newGameMoves = game.ugly_moves();
+  let bestMove = -9999;
+  let bestMoveFound;
 
-  for(var i = 0; i < newGameMoves.length; i++) {
-      var newGameMove = newGameMoves[i]
+  for(let i = 0; i < newGameMoves.length; i++) {
+      let newGameMove = newGameMoves[i]
       game.ugly_move(newGameMove);
-      var value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
+      let value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
       game.undo();
       if(value >= bestMove) {
           bestMove = value;
@@ -30,16 +28,16 @@ var minimaxRoot =function(depth, game, isMaximisingPlayer) {
   return bestMoveFound;
 };
 
-var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
+function minimax(depth, game, alpha, beta, isMaximisingPlayer) {
   if (depth === 0) {
       return -evaluateBoard(game.board());
   }
 
-  var newGameMoves = game.ugly_moves();
+  let newGameMoves = game.ugly_moves();
 
   if (isMaximisingPlayer) {
-      var bestMove = -9999;
-      for (var i = 0; i < newGameMoves.length; i++) {
+      let bestMove = -9999;
+      for (let i = 0; i < newGameMoves.length; i++) {
           game.ugly_move(newGameMoves[i]);
           bestMove = Math.max(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
           game.undo();
@@ -50,7 +48,7 @@ var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
       }
       return bestMove;
   } else {
-      var bestMove = 9999;
+      let bestMove = 9999;
       for (var i = 0; i < newGameMoves.length; i++) {
           game.ugly_move(newGameMoves[i]);
           bestMove = Math.min(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
@@ -64,21 +62,21 @@ var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
   }
 };
 
-var evaluateBoard = function (board) {
-  var totalEvaluation = 0;
-  for (var i = 0; i < 8; i++) {
-      for (var j = 0; j < 8; j++) {
+function evaluateBoard(board) {
+  let totalEvaluation = 0;
+  for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
           totalEvaluation = totalEvaluation + getPieceValue(board[i][j], i ,j);
       }
   }
   return totalEvaluation;
 };
 
-var reverseArray = function(array) {
+function reverseArray(array) {
   return array.slice().reverse();
 };
 
-var pawnEvalWhite =
+const pawnEvalWhite =
   [
       [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
       [5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0],
@@ -90,9 +88,9 @@ var pawnEvalWhite =
       [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
   ];
 
-var pawnEvalBlack = reverseArray(pawnEvalWhite);
+const pawnEvalBlack = reverseArray(pawnEvalWhite);
 
-var knightEval =
+const knightEval =
   [
       [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
       [-4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0],
@@ -104,7 +102,7 @@ var knightEval =
       [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
   ];
 
-var bishopEvalWhite = [
+const bishopEvalWhite = [
   [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
   [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
   [ -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0],
@@ -115,9 +113,9 @@ var bishopEvalWhite = [
   [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
 ];
 
-var bishopEvalBlack = reverseArray(bishopEvalWhite);
+const bishopEvalBlack = reverseArray(bishopEvalWhite);
 
-var rookEvalWhite = [
+const rookEvalWhite = [
   [  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
   [  0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5],
   [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
@@ -128,9 +126,9 @@ var rookEvalWhite = [
   [  0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0]
 ];
 
-var rookEvalBlack = reverseArray(rookEvalWhite);
+const rookEvalBlack = reverseArray(rookEvalWhite);
 
-var evalQueen =
+const evalQueen =
   [
   [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
   [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
@@ -142,7 +140,7 @@ var evalQueen =
   [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
 ];
 
-var kingEvalWhite = [
+const kingEvalWhite = [
 
   [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
   [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
@@ -154,13 +152,13 @@ var kingEvalWhite = [
   [  2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0 ]
 ];
 
-var kingEvalBlack = reverseArray(kingEvalWhite);
+const kingEvalBlack = reverseArray(kingEvalWhite);
 
-var getPieceValue = function (piece, x, y) {
+function getPieceValue (piece, x, y) {
   if (piece === null) {
       return 0;
   }
-  var getAbsoluteValue = function (piece, isWhite, x ,y) {
+  function getAbsoluteValue (piece, isWhite, x ,y) {
       if (piece.type === 'p') {
           return 10 + ( isWhite ? pawnEvalWhite[y][x] : pawnEvalBlack[y][x] );
       } else if (piece.type === 'r') {
@@ -177,31 +175,28 @@ var getPieceValue = function (piece, x, y) {
       throw "Unknown piece type: " + piece.type;
   };
 
-  var absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
+  let absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
   return piece.color === 'w' ? absoluteValue : -absoluteValue;
 };
 
-var getBestMove = function (game) {
+function getBestMove (game) {
   updateStatus();
-  var depth = 3;
-  var bestMove = minimaxRoot(depth, game, true);
+  const depth = 3;
+  let bestMove = minimaxRoot(depth, game, true);
   return bestMove;
 };
 
-var makeBestMove = function () {
+function makeBestMove () {
   if (game.turn() === 'b') {
-    var possibleMoves = game.moves({
+    let possibleMoves = game.moves({
       verbose: true
     })
 
     // game over
     if (possibleMoves.length === 0) return
 
-    var bestMove = getBestMove(game);
+    let bestMove = getBestMove(game);
     game.ugly_move(bestMove);
-
-    // highlight black's move
-    removeHighlights('black')
 
     // update the board to the new position
     board.position(game.fen())
@@ -209,19 +204,15 @@ var makeBestMove = function () {
   }
 };
 
-function removeHighlights(color) {
-  $board.find('.' + squareClass)
-    .removeClass('highlight-' + color)
-}
 
 function removeGreySquares() {
   $('#myBoard .square-55d63').css('background', '')
 }
 
 function greySquare(square) {
-  var $square = $('#myBoard .square-' + square)
+  let $square = $('#myBoard .square-' + square)
 
-  var background = whiteSquareGrey
+  let background = whiteSquareGrey
   if ($square.hasClass('black-3c85d')) {
     background = blackSquareGrey
   }
@@ -243,7 +234,7 @@ function onDragStart(source, piece, position, orientation) {
 function onDrop(source, target) {
   removeGreySquares()
   // see if the move is legal
-  var move = game.move({
+  let move = game.move({
     from: source,
     to: target,
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
@@ -252,23 +243,14 @@ function onDrop(source, target) {
   // illegal move
   if (move === null) return 'snapback'
 
-  removeHighlights('white')
-  $board.find('.square-' + source).addClass('highlight-white')
-  $board.find('.square-' + target).addClass('highlight-white')
-
   // make random legal move for black
   updateStatus()
   window.setTimeout(makeBestMove, 250)
 }
 
-function onMoveEnd() {
-  $board.find('.square-' + squareToHighlight)
-    .addClass('highlight-black')
-}
-
 function onMouseoverSquare(square, piece) {
   // get list of possible moves for this square
-  var moves = game.moves({
+  let moves = game.moves({
     square: square,
     verbose: true
   })
@@ -296,9 +278,9 @@ function onSnapEnd() {
 }
 
 function updateStatus() {
-  var status = ''
+  let status = ''
 
-  var moveColor = 'White'
+  let moveColor = 'White'
   if (game.turn() === 'b') {
     moveColor = 'Black'
   }
@@ -335,7 +317,6 @@ var config = {
   onDrop: onDrop,
   onMouseoutSquare: onMouseoutSquare,
   onMouseoverSquare: onMouseoverSquare,
-  onMoveEnd: onMoveEnd,
   onSnapEnd: onSnapEnd
 }
 
