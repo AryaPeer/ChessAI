@@ -6,6 +6,7 @@ let $fen = $('#fen')
 let $pgn = $('#pgn')
 const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
+/*End of Chessboard and Game variables*/
 
 /* Board Evalulation */
 function evaluateBoard(board) {
@@ -208,7 +209,7 @@ function makeBestMove () {
     updateStatus();
   }
 };
-/*End of get and make best move based on min max algorithm*/
+/*End of get and make best move*/
 
 /*Chessboard and Game setup*/
 function greySquare(square) {
@@ -315,3 +316,4 @@ var config = {
 board = Chessboard('myBoard', config)
 
 updateStatus()
+/*End of Chessboard and Game setup*/
