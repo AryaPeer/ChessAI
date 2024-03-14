@@ -2,7 +2,6 @@
 let board, game = new Chess();
 let $board = $('#myBoard')
 let $status = $('#status')
-let $fen = $('#fen')
 let $pgn = $('#pgn')
 const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
@@ -299,7 +298,6 @@ function updateStatus() {
   }
 
   $status.html(status)
-  $fen.html(game.fen())
   $pgn.html(game.pgn())
 }
 
