@@ -4,8 +4,10 @@ let $board = $('#myBoard')
 let $status = $('#status')
 let $fen = $('#fen')
 let $pgn = $('#pgn')
+let $evaluation = $('#evaluation')
 const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
+const rstButton = document.getElementById('rstButton');
 /*End of Chessboard and Game variables*/
 
 /* Board Evalulation */
@@ -273,11 +275,12 @@ function onSnapEnd() {
   board.position(game.fen())
 }
 
-function rstButton(){
+rstButton.addEventListener('click', function() {
   game.reset();
   board.position(game.fen());
   updateStatus();
-}
+
+});
 
 function updateStatus() {
   let status = ''
@@ -307,8 +310,46 @@ function updateStatus() {
   $status.html(status)
   $fen.html(game.fen())
   $pgn.html(game.pgn())
+  console.log(game.fen());
+  // $evaluation.html(makeApiCall(game.fen(), 15))
+  makeApiCall(game.fen(), 15);
 }
 
+function makeApiCall(fenString, depth) {
+  const url = `https://stockfish.online/api/s/v2.php?fen=${fenString}&depth=${depth}`;
+// Make the API call using fetch
+  fetch(url)
+  .then(response => {
+    // Check if the response is successful (status code 200)
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    // Parse the JSON response
+    return response.json();
+  })
+  .then(data => {
+    // Handle the response data
+    console.log('Response data:', data);
+
+    // Extract and use specific data from the response
+    const bestMove = data.bestmove;
+    const evaluation = data.evaluation;
+    const mate = data.mate;
+    const continuation = data.continuation;
+
+    // Example: log the extracted data
+    console.log('Best move:', bestMove);
+    console.log('Evaluation:', evaluation);
+    console.log('Mate:', mate);
+    console.log('Continuation:', continuation);
+    $evaluation.html(evaluation);
+  })
+  .catch(error => {
+    // Handle any errors that occurred during the fetch
+    console.error('Error:', error);
+    return null;
+  });
+}
 var config = {
   draggable: true,
   position: 'start',
