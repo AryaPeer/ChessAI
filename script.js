@@ -273,6 +273,12 @@ function onSnapEnd() {
   board.position(game.fen())
 }
 
+function rstButton(){
+  game.reset();
+  board.position(game.fen());
+  updateStatus();
+}
+
 function updateStatus() {
   let status = ''
 
