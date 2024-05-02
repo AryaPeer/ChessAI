@@ -312,7 +312,7 @@ function updateStatus() {
   $pgn.html(game.pgn())
   console.log(game.fen());
   // $evaluation.html(makeApiCall(game.fen(), 15))
-  makeApiCall(game.fen(), 15);
+  makeApiCall(game.fen(), 8);
 }
 
 function makeApiCall(fenString, depth) {
