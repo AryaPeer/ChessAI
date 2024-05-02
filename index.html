@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="UTF-8">
+    <!-- Load scripts in to header -->
+    <script src="libs\jquery.min.js"></script>
+    <script src="libs\chessboard-1.0.0.js"></script>
+    <script src="libs\chess.js"></script>
+    <script type="module" src="script.js"></script>
 
     <title>Minmax Chess AI</title>
 
@@ -34,6 +40,7 @@
 <body>
     <h1>Minmax Chess AI</h1>
 
+    
     <div id="chess-container">
         <div id="board-container">
             <div id="myBoard"></div>
@@ -43,13 +50,13 @@
             <div id="status"></div>
             <label>PGN:</label>
             <div id="pgn"></div>
+            <label>Evaluation:</label>
+            <div id="evaluation"></div>
+            <button id="rstButton">Reset Game</button>
         </div>
     </div>
 
-    <script src="libs\jquery.min.js"></script>
-    <script src="libs\chessboard-1.0.0.js"></script>
-    <script src="libs\chess.js"></script>
-    <script type="module" src="script.js"></script>
+
 
 </body>
 </html>
