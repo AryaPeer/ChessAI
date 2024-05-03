@@ -1,0 +1,25 @@
+body {
+    text-align: center;
+}
+#chess-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#board-container {
+    width: 400px;
+    max-width: 100%;
+}
+#text-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+.inline {
+    display: flex;
+    align-items: center;
+    margin-top: 5px; 
+    margin-block-end: 5px;
+}
+.inline label {
+    margin-right: 4px; 
+}
