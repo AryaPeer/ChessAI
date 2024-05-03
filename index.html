@@ -34,6 +34,15 @@
             max-width: 400px;
             margin: 0 auto;
         }
+        .inline {
+            display: flex;
+            align-items: center;
+            margin-top: 5px; /* Add margin at the top */
+            margin-block-end: 5px;
+        }
+        .inline label {
+            margin-right: 4px; /* Add space between label and text */
+        }
     </style>
 </head>
 
@@ -50,12 +59,12 @@
         <div id="text-container">
 
             <div class="inline">
-                <label>Status:</label>
+                <label>Status: </label>
                 <div id="status"></div>
             </div>
 
             <div class="inline">
-                <label>Evaluation:</label>
+                <label>Evaluation: </label>
                 <div id="evaluation"></div>
             </div>
 

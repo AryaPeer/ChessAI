@@ -309,7 +309,7 @@ function updateStatus() {
   $status.html(status)
   $fen.html(game.fen())
   // $evaluation.html(makeApiCall(game.fen(), 15))
-  makeApiCall(game.fen(), 8);
+  makeApiCall(game.fen(), 7);
 }
 
 function makeApiCall(fenString, depth) {
