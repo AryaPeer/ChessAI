@@ -7,6 +7,7 @@ let $evaluation = $('#evaluation')
 const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
 const rstButton = document.getElementById('rstButton');
+const undoButton = document.getElementById('undoButton');
 /*End of Chessboard and Game variables*/
 
 /* Board Evalulation */
@@ -302,6 +303,13 @@ rstButton.addEventListener('click', function() {
   board.position(game.fen());
   updateStatus();
 
+});
+
+undoButton.addEventListener('click', function() {
+  game.undo();
+  game.undo();
+  board.position(game.fen());
+  updateStatus();
 });
 
 function updateStatus() {
