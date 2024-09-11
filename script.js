@@ -193,24 +193,43 @@ function getBestMove (game) {
   return bestMove;
 };
 
-function makeBestMove () {
+async function makeBestMove() {
   if (game.turn() === 'b') {
-    let possibleMoves = game.moves({
-      verbose: true
-    })
+    let possibleMoves = game.moves({ verbose: true });
+    
+    // Game over
+    if (possibleMoves.length === 0) return;
 
-    // game over
-    if (possibleMoves.length === 0) return
+    let bestMove;
 
-    let bestMove = getBestMove(game);
-    game.ugly_move(bestMove);
+    // Get the selected difficulty from the dropdown
+    const difficulty = document.getElementById('difficulty').value;
 
-    // update the board to the new position
-    board.position(game.fen())
+    if (difficulty === '1') {
+      // Use minimax algorithm for difficulty 1
+      console.log("DECISION TREE MOVING")
+      bestMove = getBestMove(game);
+      game.ugly_move(bestMove);
+    } else if (difficulty === '2') {
+      // Use Stockfish API for difficulty 2
+      console.log("STOCKFISH IS MOVING")
+      bestMove = await getBestMoveFromAPI(game.fen());
+      const bestMoveString = bestMove.split(' ')[1];
+      const from = bestMoveString.slice(0, 2);  // 'f6'
+      const to = bestMoveString.slice(2, 4);    // 'g8'
+      const promotion = bestMove[4];      // Optional promotion character
+      const move = { from, to };
+      if (promotion) move.promotion = promotion; // Handle promotion if needed
+      game.move(move);  // Perform the move in chess.js
+    }
+
+    // Update the board to the new position
+    board.position(game.fen());
     updateStatus();
   }
-};
+}
 /*End of get and make best move*/
+
 
 /*Chessboard and Game setup*/
 function greySquare(square) {
@@ -232,6 +251,10 @@ function onDragStart(source, piece, position, orientation) {
   if (game.game_over()) return false
 
   if (game.turn() === 'w' && piece.search(/^b/) !== -1) {
+    return false
+  }
+
+  if (game.turn() === 'b' && piece.search(/^b/) !== -1) {
     return false
   }
 }
@@ -339,6 +362,26 @@ function makeApiCall(fenString, depth) {
     return null;
   });
 }
+
+function getBestMoveFromAPI(fenString) {
+  const url = `https://stockfish.online/api/s/v2.php?fen=${fenString}&depth=7`;
+
+  return fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      return data.bestmove;
+    })
+    .catch(error => {
+      console.error('Error fetching best move from API:', error);
+      return null;
+    });
+}
+
 var config = {
   draggable: true,
   position: 'start',
