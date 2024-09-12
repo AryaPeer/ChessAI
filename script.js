@@ -307,8 +307,12 @@ rstButton.addEventListener('click', function() {
 });
 
 undoButton.addEventListener('click', function() {
-  game.undo();
-  game.undo();
+  if (game.turn() === 'w') {
+    game.undo();
+    game.undo();
+  } else if (game.turn() === 'b') {
+    game.undo();
+  }
   board.position(game.fen());
   updateStatus();
 });
