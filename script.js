@@ -3,7 +3,6 @@ let board, game = new Chess();
 let $board = $('#myBoard')
 let $status = $('#status')
 let $fen = $('#fen')
-let $evaluation = $('#evaluation')
 const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
 const rstButton = document.getElementById('rstButton');
@@ -214,6 +213,8 @@ async function makeBestMove() {
     } else if (difficulty === '2') {
       // Use Stockfish API for difficulty 2
       console.log("STOCKFISH IS MOVING")
+      $status.html("Waiting For Stockfish API Response")
+
       bestMove = await getBestMoveFromAPI(game.fen());
       const bestMoveString = bestMove.split(' ')[1];
       const from = bestMoveString.slice(0, 2);  // 'f6'
@@ -339,36 +340,6 @@ function updateStatus() {
 
   $status.html(status)
   $fen.html(game.fen())
-  // $evaluation.html(makeApiCall(game.fen(), 15))
-  makeApiCall(game.fen(), 7);
-}
-
-function makeApiCall(fenString, depth) {
-  const url = `https://stockfish.online/api/s/v2.php?fen=${fenString}&depth=${depth}`;
-// Make the API call using fetch
-  fetch(url)
-  .then(response => {
-    // Check if the response is successful (status code 200)
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    // Parse the JSON response
-    return response.json();
-  })
-  .then(data => {
-    const bestMove = data.bestmove;
-    const evaluation = data.evaluation;
-    const mate = data.mate;
-    const continuation = data.continuation;
-
-    console.log('Evaluation:', evaluation);
-    $evaluation.html(evaluation);
-  })
-  .catch(error => {
-    // Handle any errors that occurred during the fetch
-    console.error('Error:', error);
-    return null;
-  });
 }
 
 function getBestMoveFromAPI(fenString) {
@@ -386,6 +357,7 @@ function getBestMoveFromAPI(fenString) {
     })
     .catch(error => {
       console.error('Error fetching best move from API:', error);
+      $status.html("ERROR WITH STOCKFISH API RESPONSE")
       return null;
     });
 }
