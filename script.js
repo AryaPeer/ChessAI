@@ -219,7 +219,7 @@ async function makeBestMove() {
       const bestMoveString = bestMove.split(' ')[1];
       const from = bestMoveString.slice(0, 2);  // 'f6'
       const to = bestMoveString.slice(2, 4);    // 'g8'
-      const promotion = bestMove[4];      // Optional promotion character
+      const promotion = bestMoveString[4];      // Optional promotion character
       const move = { from, to };
       if (promotion) move.promotion = promotion; // Handle promotion if needed
       game.move(move);  // Perform the move in chess.js
