@@ -379,4 +379,8 @@ var config = {
 board = Chessboard('myBoard', config)
 
 updateStatus()
+
+window.addEventListener('resize', function() {
+  board.resize();
+});
 /*End of Chessboard and Game setup*/
