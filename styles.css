@@ -30,7 +30,7 @@ body {
 h1 {
     color: var(--primary-color);
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: 30px;
 }
 
@@ -119,7 +119,7 @@ select:focus {
     }
 
     h1 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         margin-bottom: 20px;
     }
 
@@ -151,7 +151,7 @@ select:focus {
 
 @media screen and (max-width: 480px) {
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
 
     #board-container, 
