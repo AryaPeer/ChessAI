@@ -216,6 +216,10 @@ async function makeBestMove() {
       $status.html("Waiting For Stockfish API Response")
 
       bestMove = await getBestMoveFromAPI(game.fen());
+      if (bestMove === null) {
+        $status.html("Error: Unable to fetch best move from Stockfish API");
+        return;
+      }
       const bestMoveString = bestMove.split(' ')[1];
       const from = bestMoveString.slice(0, 2);  // 'f6'
       const to = bestMoveString.slice(2, 4);    // 'g8'
