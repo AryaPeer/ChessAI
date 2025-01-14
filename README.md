@@ -1,6 +1,6 @@
-# ChessAI
+ChessAI
 
-A chess website that offers players the opportunity to challenge both a custom Min-Max algorithm (with alpha-beta pruning) and a powerful Stockfish chess api.
+A chess website that offers players the opportunity to challenge both a custom Min-Max algorithm (with alpha-beta pruning) and the powerful Stockfish chess api.
 
 ## Features
 
