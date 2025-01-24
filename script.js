@@ -7,6 +7,13 @@ const whiteSquareGrey = '#a9a9a9'
 const blackSquareGrey = '#696969'
 const rstButton = document.getElementById('rstButton');
 const undoButton = document.getElementById('undoButton');
+const submitNameButton = document.getElementById('submit-name');
+const namePrompt = document.getElementById('name-prompt');
+const winnerNameInput = document.getElementById('winner-name');
+const minimaxWinnersList = document.getElementById('minimax-winners-list');
+const stockfishWinnersList = document.getElementById('stockfish-winners-list');
+let minimaxWinners = [];
+let stockfishWinners = [];
 /*End of Chessboard and Game variables*/
 
 /* Board Evalulation */
@@ -321,6 +328,20 @@ undoButton.addEventListener('click', function() {
   updateStatus();
 });
 
+submitNameButton.addEventListener('click', function() {
+  const name = winnerNameInput.value.trim();
+  if (name && !isOffensive(name)) {
+    const difficulty = document.getElementById('difficulty').value;
+    if (difficulty === '1') {
+      minimaxWinners.push(name);
+    } else if (difficulty === '2') {
+      stockfishWinners.push(name);
+    }
+    updateWinnersList();
+    namePrompt.classList.add('hidden');
+  }
+});
+
 function updateStatus() {
   let status = ''
 
@@ -331,6 +352,9 @@ function updateStatus() {
 
   if (game.in_checkmate()) {
     status = 'Game over, ' + moveColor + ' is in checkmate.'
+    if (moveColor === 'Black') {
+      namePrompt.classList.remove('hidden');
+    }
   }
 
   else if (game.in_draw()) {
@@ -368,6 +392,27 @@ function getBestMoveFromAPI(fenString) {
       $status.html("ERROR WITH STOCKFISH API RESPONSE")
       return null;
     });
+}
+
+function isOffensive(name) {
+  const offensiveWords = ['badword1', 'badword2', 'badword3']; // Add more offensive words as needed
+  const lowerCaseName = name.toLowerCase();
+  return offensiveWords.some(word => lowerCaseName.includes(word));
+}
+
+function updateWinnersList() {
+  minimaxWinnersList.innerHTML = '';
+  stockfishWinnersList.innerHTML = '';
+  minimaxWinners.forEach(winner => {
+    const li = document.createElement('li');
+    li.textContent = winner;
+    minimaxWinnersList.appendChild(li);
+  });
+  stockfishWinners.forEach(winner => {
+    const li = document.createElement('li');
+    li.textContent = winner;
+    stockfishWinnersList.appendChild(li);
+  });
 }
 
 var config = {
